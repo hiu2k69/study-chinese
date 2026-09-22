@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="./image/d.png">
+    <meta property="og:image" content="./image/banner.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HSK 1-6 · Luyện Từ Vựng</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #0f0f1a;
+            --card: #1a1a2e;
+            --accent: #ff4d6d;
+            --accent2: #7b2cbf;
+            --accent3: #00d4ff;
+            --text: #f0f0f5;
+            --muted: #9999aa;
+            --success: #00e676;
+            --error: #ff5252;
+            --glass: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.12);
+            --animate-duration: 0.5s;
+            --stage-max: 560px;
+            --font-tech: 'Orbitron', 'Be Vietnam Pro', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', 'Noto Sans SC', system-ui, sans-serif;
+            background: var(--bg);
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 15% 10%, rgba(123, 44, 191, 0.22), transparent 45%),
+                radial-gradient(circle at 85% 0%, rgba(0, 212, 255, 0.16), transparent 40%),
+                radial-gradient(circle at 50% 100%, rgba(255, 77, 109, 0.14), transparent 45%);
+            background-size: 42px 42px, 42px 42px, auto, auto, auto;
+            background-attachment: fixed;
+            background-position: center, center, center, center, center;
+            animation: grid-drift 30s linear infinite;
+            color: var(--text);
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+
+        @keyframes grid-drift {
+            0% {
+                background-position: 0 0, 0 0, center, center, center;
+            }
+
+            100% {
+                background-position: 42px 42px, 42px 42px, center, center, center;
+            }
+        }
+
+        @media (min-width: 860px) {
+            :root {
+                --stage-max: 900px;
+            }
+        }
+
+        #fw-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #fw-canvas.active {
+            opacity: 1;
+        }
+
+        /* ===== Loading overlay ===== */
+        #load-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(15, 15, 26, 0.72);
+            backdrop-filter: blur(3px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        #load-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #load-overlay .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--accent3);
+        }
+
+        #load-overlay span {
+            color: var(--muted);
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        header {
+            text-align: center;
+            padding: 1.5rem 1rem 0.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: var(--font-tech);
+            font-size: clamp(1.5rem, 5.4vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            background: linear-gradient(135deg, #ff4d6d, #00d4ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        header p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+            transition: opacity 0.25s;
+        }
+
+        .levels {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.6rem 0.8rem 0.4rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+            max-width: var(--stage-max);
+            margin: 0 auto;
+        }
+
+        .level-btn {
+            font-family: var(--font-tech);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.45rem 0.95rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.25s, color 0.25s, box-shadow 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-2px);
+            color: var(--text);
+        }
+
+        .level-btn:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.35);
+        }
+
+        .modes {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.8rem 0.8rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+            max-width: var(--stage-max);
+            margin: 0 auto;
+        }
+
+        .mode-btn {
+            font-family: var(--font-tech);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.25s, box-shadow 0.25s;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .mode-btn:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ff4d6d, #7b2cbf);
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(255, 77, 109, 0.35);
+        }
+
+        /* ripple */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-anim 0.55s ease-out;
+            background: rgba(255, 255, 255, 0.45);
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(3.2);
+                opacity: 0;
+            }
+        }
+
+        .search-wrap {
+            max-width: var(--stage-max);
+            margin: 0 auto;
+            padding: 0.2rem 0.9rem 0.6rem;
+            position: relative;
+            z-index: 30;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.6rem 0.8rem;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent3);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.14), 0 0 18px rgba(0, 212, 255, 0.15);
+        }
+
+        .search-icon {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        #global-search {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 0.92rem;
+        }
+
+        #global-search::placeholder {
+            color: var(--muted);
+        }
+
+        .search-clear {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            flex-shrink: 0;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .search-clear:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-results {
+            position: absolute;
+            left: 0.9rem;
+            right: 0.9rem;
+            top: calc(100% - 0.1rem);
+            max-height: 340px;
+            overflow-y: auto;
+            background: rgba(18, 18, 32, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 40;
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.65rem 0.85rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background 0.15s;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover,
+        .search-result-item.active {
+            background: rgba(0, 212, 255, 0.09);
+        }
+
+        .sr-hanzi {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            min-width: 2.6em;
+        }
+
+        .sr-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sr-pinyin {
+            font-size: 0.82rem;
+            color: var(--accent3);
+        }
+
+        .sr-meaning {
+            font-size: 0.85rem;
+            color: #d8d8e2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sr-level {
+            font-family: var(--font-tech);
+            font-size: 0.62rem;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 0.2rem 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .search-empty,
+        .search-loading {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .sr-mark {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.4rem 1rem 1rem;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+            max-width: var(--stage-max);
+            margin: 0 auto;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-family: var(--font-tech);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.45);
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        .stat-val.pulse {
+            animation: stat-pulse 0.4s ease;
+        }
+
+        @keyframes stat-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.35);
+                color: #00e676;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .stat-label {
+            font-family: var(--font-tech);
+            font-size: 0.68rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .stage {
+            max-width: var(--stage-max);
+            margin: 0 auto;
+            padding: 0 0.9rem 3rem;
+            position: relative;
+            z-index: 10;
+            transition: max-width 0.3s;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .card-container {
+            perspective: 1200px;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 860px) {
+            .card-container {
+                height: 380px;
+            }
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(.4, .2, .2, 1);
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(160deg, rgba(26, 26, 46, 0.92), rgba(18, 18, 32, 0.96));
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 212, 255, 0.06) inset;
+            transition: box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
+        }
+
+        /* Góc HUD kiểu tương lai ở 4 góc thẻ */
+        .card-face::before,
+        .card-face::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--accent3);
+            opacity: 0.55;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .card-face::before {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 8px;
+        }
+
+        .card-face::after {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 8px;
+            border-color: var(--accent);
+        }
+
+        .card:hover .card-face {
+            box-shadow: 0 10px 36px rgba(123, 44, 191, 0.4), 0 0 26px rgba(0, 212, 255, 0.16);
+            border-color: rgba(0, 212, 255, 0.35);
+        }
+
+        .card:hover .card-face::before,
+        .card:hover .card-face::after {
+            opacity: 1;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .hanzi {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: clamp(2.6rem, 11vw, 5.2rem);
+            font-weight: 700;
+            color: var(--text);
+            opacity: 1;
+        }
+
+        .pinyin {
+            font-size: 1.3rem;
+            color: #00d4ff;
+            text-shadow: 0 0 14px rgba(0, 212, 255, 0.4);
+            margin-top: 0.6rem;
+        }
+
+        .meaning {
+            font-size: 1.05rem;
+            margin-top: 0.8rem;
+            text-align: center;
+            color: #e0e0e8;
+            max-width: 95%;
+            line-height: 1.4;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 12px;
+            font-family: var(--font-tech);
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        @media (min-width: 860px) {
+            .hanzi {
+                font-size: clamp(3.2rem, 7vw, 6rem);
+            }
+        }
+
+        .btn {
+            font-family: var(--font-tech);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.65rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            min-height: 44px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.25s, border-color 0.25s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 16px rgba(0, 212, 255, 0.18);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #ff4d6d, #7b2cbf);
+            border: none;
+            box-shadow: 0 4px 18px rgba(255, 77, 109, 0.3);
+        }
+
+        .btn.primary:hover {
+            box-shadow: 0 4px 22px rgba(255, 77, 109, 0.5);
+        }
+
+        .card-nav,
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+
+        .quiz-question,
+        .type-question {
+            position: relative;
+            background: linear-gradient(160deg, rgba(26, 26, 46, 0.92), rgba(18, 18, 32, 0.96));
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2rem 1.2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 212, 255, 0.06) inset;
+            overflow: hidden;
+        }
+
+        .quiz-question::before,
+        .quiz-question::after,
+        .type-question::before,
+        .type-question::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent3);
+            opacity: 0.45;
+        }
+
+        .quiz-question::before,
+        .type-question::before {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .quiz-question::after,
+        .type-question::after {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+            border-color: var(--accent);
+        }
+
+        .quiz-hanzi {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: clamp(2.3rem, 9vw, 4.4rem);
+            font-weight: 700;
+        }
+
+        .quiz-pinyin-hint {
+            font-size: 1rem;
+            color: var(--muted);
+            margin-top: 0.4rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .quiz-pinyin-hint.show {
+            opacity: 1;
+        }
+
+        .options {
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .option {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.95rem 1.1rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: left;
+            color: var(--text);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: opt-in 0.35s ease forwards;
+            transition: border-color 0.25s, background 0.25s, transform 0.15s;
+        }
+
+        .option:hover:not(.disabled) {
+            transform: translateY(-2px);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        @keyframes opt-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(0, 230, 118, 0.15);
+            animation: correct-pop 0.5s ease;
+        }
+
+        @keyframes correct-pop {
+            0% {
+                transform: scale(1);
+            }
+
+            35% {
+                transform: scale(1.035);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .option.wrong {
+            border-color: var(--error);
+            background: rgba(255, 82, 82, 0.15);
+            animation: shake-x 0.45s ease;
+        }
+
+        @keyframes shake-x {
+
+            10%,
+            90% {
+                transform: translateX(-2px);
+            }
+
+            20%,
+            80% {
+                transform: translateX(4px);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translateX(-7px);
+            }
+
+            40%,
+            60% {
+                transform: translateX(7px);
+            }
+        }
+
+        .option.disabled {
+            pointer-events: none;
+        }
+
+        .type-hanzi {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 4.6rem);
+            font-weight: 700;
+        }
+
+        .type-meaning {
+            font-size: 1.05rem;
+            color: var(--muted);
+            margin-top: 0.6rem;
+        }
+
+        .pinyin-input {
+            width: 100%;
+            background: var(--glass);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 0.95rem;
+            font-size: 1.2rem;
+            color: var(--text);
+            text-align: center;
+            outline: none;
+            margin-bottom: 0.6rem;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .pinyin-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.15);
+        }
+
+        .pinyin-input.correct {
+            border-color: var(--success);
+            animation: correct-pop 0.5s ease;
+        }
+
+        .pinyin-input.wrong {
+            border-color: var(--error);
+            animation: shake-x 0.45s ease;
+        }
+
+        .feedback {
+            text-align: center;
+            min-height: 1.4rem;
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
+            transition: opacity 0.2s;
+        }
+
+        .feedback.ok {
+            color: var(--success);
+        }
+
+        .feedback.err {
+            color: var(--error);
+        }
+
+        .tone-help {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .tone-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.15s, color 0.2s, border-color 0.2s;
+        }
+
+        .tone-btn:hover {
+            transform: translateY(-2px);
+            color: var(--accent3);
+            border-color: var(--accent3);
+        }
+
+        .tone-btn:active {
+            transform: scale(0.9);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0.8rem 0 0.3rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4d6d, #00d4ff, #7b2cbf);
+            background-size: 200% 100%;
+            animation: progress-flow 2.4s linear infinite;
+            border-radius: 2px;
+            transition: width 0.35s ease;
+        }
+
+        @keyframes progress-flow {
+            to {
+                background-position: -200% 0;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e1e2e;
+            border: 1px solid var(--border);
+            padding: 0.7rem 1.3rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            z-index: 10000;
+            transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1), opacity 0.35s;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .fade-swap {
+            animation: fade-swap-in 0.35s ease;
+        }
+
+        @keyframes fade-swap-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width:480px) {
+            .card-container {
+                height: 260px;
+            }
+
+            .mode-btn {
+                padding: 0.5rem 0.9rem;
+                font-size: 0.82rem;
+            }
+
+            .level-btn {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.78rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="fw-canvas"></canvas>
+
+    <div id="load-overlay">
+        <div class="spinner-border" role="status"></div>
+        <span id="load-text">Đang tải từ vựng...</span>
+    </div>
+
+    <header class="animate__animated animate__fadeInDown">
+        <h1>HSK 1-6 · 词汇练习</h1>
+        <p id="header-desc">Chọn cấp độ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin</p>
+    </header>
+
+    <!-- Các nút bên dưới được JS sinh tự động từ config LEVELS / MODES -->
+    <div class="levels animate__animated animate__fadeInUp" id="level-tabs"></div>
+
+    <div class="modes animate__animated animate__fadeInUp" id="modes-bar"></div>
+
+    <div class="search-wrap animate__animated animate__fadeInUp" id="search-wrap">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="global-search" placeholder="Tìm từ ở mọi cấp độ HSK... (vd: hôm qua)" autocomplete="off">
+            <button class="search-clear" id="search-clear" title="Xóa tìm kiếm" style="display:none">✕</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">Tổng từ</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="stat-done">0</div>
+            <div class="stat-label">Đã làm</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="stat-correct">0</div>
+            <div class="stat-label">Đúng</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="stat-acc">—</div>
+            <div class="stat-label">Chính xác</div>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="panel active" id="panel-flash">
+            <div class="card-container">
+                <div class="card" id="flash-card">
+                    <div class="card-face card-front">
+                        <div class="hanzi" id="flash-hanzi">—</div>
+                        <div class="hint">Nhấn để lật thẻ</div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="pinyin" id="flash-pinyin"></div>
+                        <div class="meaning" id="flash-meaning"></div>
+                        <div class="hint">Nhấn để lật lại</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="flash-progress" style="width:0%"></div>
+            </div>
+            <div class="card-nav">
+                <button class="btn" id="flash-prev">← Trước</button>
+                <button class="btn primary" id="flash-next">Tiếp →</button>
+                <button class="btn" id="flash-shuffle">🔀 Xáo</button>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-quiz">
+            <div class="quiz-question">
+                <div class="quiz-hanzi" id="quiz-hanzi">—</div>
+                <div class="quiz-pinyin-hint" id="quiz-hint"></div>
+            </div>
+            <div class="options" id="quiz-options"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress" style="width:0%"></div>
+            </div>
+            <div class="controls">
+                <button class="btn primary" id="quiz-next" style="display:none">Câu tiếp →</button>
+                <button class="btn" id="quiz-shuffle">🔀 Xáo</button>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-type">
+            <div class="type-question">
+                <div class="type-hanzi" id="type-hanzi">—</div>
+                <div class="type-meaning" id="type-meaning"></div>
+            </div>
+            <div class="tone-help">
+                <button class="tone-btn" data-tone="1">ā</button>
+                <button class="tone-btn" data-tone="2">á</button>
+                <button class="tone-btn" data-tone="3">ǎ</button>
+                <button class="tone-btn" data-tone="4">à</button>
+                <button class="tone-btn" data-tone="0">a</button>
+            </div>
+            <input type="text" class="pinyin-input" id="pinyin-input" placeholder="Nhập pinyin (vd: ai4)" autocomplete="off">
+            <div class="feedback" id="type-feedback"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="type-progress" style="width:0%"></div>
+            </div>
+            <div class="controls">
+                <button class="btn primary" id="type-check">Kiểm tra</button>
+                <button class="btn" id="type-skip">Bỏ qua</button>
+                <button class="btn" id="type-shuffle">🔀 Xáo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Bootstrap bundle (Popper + JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // =====================================================================
+        // CẤU HÌNH TAB — nguồn duy nhất cho cả cấp độ HSK và chế độ học.
+        // Muốn thêm/sửa/xoá tab: chỉ cần sửa 2 mảng dưới đây, KHÔNG cần đụng
+        // vào HTML hay các hàm render/sự kiện — mọi nơi khác trong code đều
+        // tra cứu ngược lại từ đây (id, nhãn, file dữ liệu...).
+        // =====================================================================
+
+        // Giá trị mặc định dùng chung cho mọi level — muốn 1 level có hành vi
+        // khác (VD: số lượng đáp án trắc nghiệm riêng) thì spread đè lên là đủ.
+        const LEVEL_DEFAULTS = {
+            quizOptionCount: 4
+        };
+
+        const LEVELS = [
+            { id: 1, label: 'HSK 1', file: 'data/hsk1.json' },
+            { id: 2, label: 'HSK 2', file: 'data/hsk2.json' },
+            { id: 3, label: 'HSK 3', file: 'data/hsk3.json' },
+            { id: 4, label: 'HSK 4', file: 'data/hsk4.json' },
+            { id: 5, label: 'HSK 5', file: 'data/hsk5.json' },
+            { id: 6, label: 'HSK 6', file: 'data/hsk6.json' },
+            { id: 30, label: 'HSK 3.0', file: 'data/hsk30.json' },
+            { id: 40, label: 'OTHERS', file: 'data/others.json' },
+
+            // Thêm cấp độ mới ở đây, ví dụ:
+            // { id: 7, label: 'HSK 7-9', file: 'data/hsk79.json' },
+        ].map(lv => ({ ...LEVEL_DEFAULTS, ...lv }));
+
+        // Mỗi mode cần: id (khớp với id="panel-<id>" đã có sẵn trong HTML),
+        // label hiển thị trên nút, render() để vẽ câu hỏi/thẻ hiện tại,
+        // và shuffle() để xử lý nút "Xáo trộn" riêng của mode đó.
+        // Muốn thêm mode mới: thêm 1 panel HTML "panel-xxx" + 1 object ở đây.
+        const MODES = [
+            {
+                id: 'flash',
+                label: '🃏 Thẻ ghi nhớ',
+                render: () => renderFlash(),
+                shuffle: () => { resetOrder(); renderFlash(); popAnimate(document.getElementById('flash-card'), 'animate__flip'); toast('Đã xáo trộn!'); }
+            },
+            {
+                id: 'quiz',
+                label: '✅ Trắc nghiệm',
+                render: () => renderQuiz(),
+                shuffle: () => { resetOrder(); renderQuiz(); toast('Đã xáo trộn!'); }
+            },
+            {
+                id: 'type',
+                label: '⌨️ Gõ Pinyin',
+                render: () => renderType(),
+                shuffle: () => { resetOrder(); renderType(); toast('Đã xáo trộn!'); }
+            },
+            // Thêm chế độ mới ở đây, ví dụ:
+            // { id: 'listen', label: '🔊 Nghe đoán từ', render: () => renderListen(), shuffle: () => {...} },
+        ];
+
+        function getLevelConfig(id) {
+            return LEVELS.find(l => l.id === id);
+        }
+        function getModeConfig(id) {
+            return MODES.find(m => m.id === id);
+        }
+
+        // ===== STATE =====
+        const VOCAB_BY_LEVEL = {};
+        let currentLevel = LEVELS[0].id;
+        let VOCAB = [];
+        let mode = MODES[0].id;
+        let order = [];
+        let idx = 0;
+        let done = 0, correct = 0;
+        let answered = false;
+        let consecutiveCorrect = 0;
+        let advanceTimer = null;
+
+        // ===== RIPPLE EFFECT (áp dụng cho mọi .btn / .level-btn / .mode-btn / .tone-btn) =====
+        function attachRipple(el) {
+            el.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                const size = Math.max(rect.width, rect.height);
+                ripple.className = 'ripple';
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.style.position = this.style.position || 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
+        function attachRippleAll() {
+            document.querySelectorAll('.btn, .level-btn, .mode-btn, .tone-btn').forEach(attachRipple);
+        }
+
+        // ===== small animation helper (animate.css) =====
+        // Có cơ chế fallback timeout để đảm bảo class + opacity luôn được dọn
+        // sạch, tránh trường hợp animationend không bắn (bấm nhanh liên tục,
+        // tab mất focus, v.v...) khiến chữ bị kẹt ở trạng thái mờ giữa chừng.
+        function popAnimate(el, cls) {
+            if (!el) return;
+            if (el._animCleanup) el._animCleanup();
+            el.classList.remove('animate__animated', cls);
+            void el.offsetWidth; // force reflow để restart animation
+            el.classList.add('animate__animated', cls);
+
+            const cleanup = () => {
+                el.classList.remove('animate__animated', cls);
+                el.style.opacity = '';
+                el.removeEventListener('animationend', onEnd);
+                clearTimeout(fallback);
+                el._animCleanup = null;
+            };
+            const onEnd = () => cleanup();
+            el.addEventListener('animationend', onEnd);
+            const fallback = setTimeout(cleanup, 900);
+            el._animCleanup = cleanup;
+        }
+
+        function pulseStat(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('pulse');
+            void el.offsetWidth;
+            el.classList.add('pulse');
+        }
+
+        // ===== LOADING OVERLAY (dùng counter để chịu được nhiều lệnh tải chồng nhau,
+        // ví dụ tìm kiếm tải nhiều file JSON cùng lúc với việc đổi cấp độ) =====
+        const loadOverlay = document.getElementById('load-overlay');
+        let loadingCount = 0;
+        function showLoading(text) {
+            loadingCount++;
+            document.getElementById('load-text').textContent = text || 'Đang tải từ vựng...';
+            loadOverlay.classList.add('show');
+        }
+        function hideLoading() {
+            loadingCount = Math.max(0, loadingCount - 1);
+            if (loadingCount === 0) loadOverlay.classList.remove('show');
+        }
+
+        // ===== AUDIO =====
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration, vol = 0.12) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.value = vol;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) { }
+        }
+        function playCorrect() {
+            playTone(880, 'sine', 0.1);
+            setTimeout(() => playTone(1175, 'sine', 0.15), 70);
+        }
+        function playWrong() {
+            playTone(200, 'sawtooth', 0.2, 0.08);
+        }
+
+        // ===== FIREWORKS =====
+        const canvas = document.getElementById('fw-canvas');
+        const ctx = canvas.getContext('2d', { alpha: true });
+        let particles = [];
+        let rockets = [];
+        let fwRunning = false;
+        let animId = null;
+
+        const colors = ['#ff4d6d', '#00d4ff', '#7b2cbf', '#00e676', '#ffd700', '#ff6b35', '#a855f7'];
+        const MAX_PARTICLES = 280;
+        const PARTICLE_POOL = [];
+        const ROCKET_POOL = [];
+
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+            PARTICLE_POOL.push({
+                x: 0, y: 0, vx: 0, vy: 0,
+                color: '#fff', alpha: 0, life: 0,
+                size: 2, gravity: 0.09, friction: 0.96,
+                active: false
+            });
+        }
+        for (let i = 0; i < 12; i++) {
+            ROCKET_POOL.push({
+                x: 0, y: 0, targetY: 0, speed: 0,
+                color: '#fff', trail: [], active: false
+            });
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function getParticle() {
+            for (let i = 0; i < PARTICLE_POOL.length; i++) {
+                if (!PARTICLE_POOL[i].active) return PARTICLE_POOL[i];
+            }
+            return null;
+        }
+
+        function getRocket() {
+            for (let i = 0; i < ROCKET_POOL.length; i++) {
+                if (!ROCKET_POOL[i].active) return ROCKET_POOL[i];
+            }
+            return null;
+        }
+
+        function spawnExplosion(x, y, baseColor) {
+            const count = 42;
+            for (let i = 0; i < count; i++) {
+                const p = getParticle();
+                if (!p) break;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5.5 + 1.8;
+                p.x = x; p.y = y;
+                p.vx = Math.cos(angle) * speed;
+                p.vy = Math.sin(angle) * speed;
+                p.color = Math.random() > 0.28 ? baseColor : colors[(Math.random() * colors.length) | 0];
+                p.alpha = 1;
+                p.life = 38 + (Math.random() * 28) | 0;
+                p.active = true;
+                p.size = 1.6 + Math.random() * 2.4;
+                particles.push(p);
+            }
+        }
+
+        function triggerFireworks() {
+            canvas.classList.add('active');
+            const toLaunch = Math.min(4, 12 - rockets.length);
+            for (let i = 0; i < toLaunch; i++) {
+                setTimeout(() => {
+                    const r = getRocket();
+                    if (!r) return;
+                    r.x = Math.random() * canvas.width * 0.7 + canvas.width * 0.15;
+                    r.y = canvas.height;
+                    r.targetY = 70 + Math.random() * canvas.height * 0.38;
+                    r.speed = 7.2 + Math.random() * 2.8;
+                    r.color = colors[(Math.random() * colors.length) | 0];
+                    r.trail.length = 0;
+                    r.active = true;
+                    rockets.push(r);
+                }, i * 180);
+            }
+            if (!fwRunning) {
+                fwRunning = true;
+                animId = requestAnimationFrame(animateFW);
+            }
+        }
+
+        function animateFW() {
+            if (particles.length || rockets.length) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            for (let i = rockets.length - 1; i >= 0; i--) {
+                const r = rockets[i];
+                r.y -= r.speed;
+                r.trail.push(r.x, r.y);
+                if (r.trail.length > 16) r.trail.splice(0, 2);
+
+                for (let t = 0; t < r.trail.length; t += 2) {
+                    ctx.globalAlpha = (t / r.trail.length) * 0.45;
+                    ctx.fillStyle = r.color;
+                    ctx.fillRect(r.trail[t] - 1.2, r.trail[t + 1] - 1.2, 2.4, 2.4);
+                }
+
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(r.x - 2, r.y - 2, 4, 4);
+
+                if (r.y <= r.targetY) {
+                    spawnExplosion(r.x, r.y, r.color);
+                    r.active = false;
+                    rockets.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.vx *= p.friction;
+                p.vy = p.vy * p.friction + p.gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 1 / p.life;
+                p.life--;
+
+                if (p.life <= 0 || p.alpha <= 0.02 || p.y > canvas.height + 40) {
+                    p.active = false;
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                const s = p.size;
+                ctx.fillRect(p.x - s, p.y - s, s * 2, s * 2);
+            }
+
+            ctx.globalAlpha = 1;
+
+            if (particles.length > 0 || rockets.length > 0) {
+                animId = requestAnimationFrame(animateFW);
+            } else {
+                canvas.classList.remove('active');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fwRunning = false;
+                animId = null;
+            }
+        }
+
+        // ===== UTILS =====
+        function shuffle(a) {
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+        function clearAdvance() {
+            if (advanceTimer) {
+                clearTimeout(advanceTimer);
+                advanceTimer = null;
+            }
+        }
+        function resetOrder() {
+            order = shuffle([...Array(VOCAB.length).keys()]);
+            idx = 0;
+            answered = false;
+            clearAdvance();
+        }
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => t.classList.remove('show'), 2000);
+        }
+        function updateStats() {
+            document.getElementById('stat-done').textContent = done;
+            document.getElementById('stat-correct').textContent = correct;
+            document.getElementById('stat-acc').textContent = done ? Math.round(correct / done * 100) + '%' : '—';
+            pulseStat('stat-done');
+            pulseStat('stat-correct');
+            pulseStat('stat-acc');
+        }
+        function updateProgress(id) {
+            document.getElementById(id).style.width = ((idx + 1) / order.length * 100).toFixed(1) + '%';
+        }
+        function normalizePinyin(s) {
+            return s.toLowerCase()
+                .replace(/[āáǎà]/g, 'a').replace(/[ēéěè]/g, 'e')
+                .replace(/[īíǐì]/g, 'i').replace(/[ōóǒò]/g, 'o')
+                .replace(/[ūúǔù]/g, 'u').replace(/[ǖǘǚǜü]/g, 'v')
+                .replace(/[1-5]/g, '').replace(/\s+/g, '').trim();
+        }
+        function checkAndCelebrate(isCorrect) {
+            if (isCorrect) {
+                consecutiveCorrect++;
+                if (consecutiveCorrect % 5 === 0) {
+                    triggerFireworks();
+                    toast('🎉 Đúng ' + consecutiveCorrect + ' câu liên tiếp!');
+                }
+            } else {
+                consecutiveCorrect = 0;
+            }
+        }
+
+        // ===== LOAD VOCAB FROM JSON =====
+        async function loadVocab(level) {
+            const cfg = getLevelConfig(level);
+            const url = cfg && cfg.file;
+            if (!url) return [];
+
+            showLoading('Đang tải ' + getLevelName(level) + '...');
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Không tải được file');
+                const data = await res.json();
+                VOCAB_BY_LEVEL[level] = data;
+                return data;
+            } catch (err) {
+                console.error('Lỗi load vocab:', err);
+                toast('Không tải được từ vựng cấp này');
+                return [];
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function getLevelName(level) {
+            const cfg = getLevelConfig(level);
+            return cfg ? cfg.label : `HSK ${level}`;
+        }
+
+        async function setLevel(level) {
+            currentLevel = level;
+
+            if (!VOCAB_BY_LEVEL[level]) {
+                VOCAB = await loadVocab(level);
+            } else {
+                VOCAB = VOCAB_BY_LEVEL[level];
+            }
+
+            localStorage.setItem('hsk_last_level', level);
+
+            document.querySelectorAll('.level-btn').forEach(b => {
+                b.classList.toggle('active', +b.dataset.level === level);
+            });
+
+            done = 0;
+            correct = 0;
+            consecutiveCorrect = 0;
+            updateStats();
+            document.getElementById('stat-total').textContent = VOCAB.length;
+
+            const desc = document.getElementById('header-desc');
+            desc.style.opacity = 0;
+            setTimeout(() => {
+                desc.textContent = `${getLevelName(level)} · ${VOCAB.length} từ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin`;
+                desc.style.opacity = 1;
+            }, 150);
+
+            resetOrder();
+
+            popAnimate(document.getElementById('panel-' + mode), 'animate__fadeIn');
+
+            if (mode === 'flash') renderFlash();
+            else if (mode === 'quiz') renderQuiz();
+            else renderType();
+
+            toast(`Đã chuyển sang ${getLevelName(level)}`);
+        }
+
+        // ===== FLASH =====
+        function renderFlash() {
+            if (!VOCAB.length) return;
+            const w = VOCAB[order[idx]];
+            const cardEl = document.getElementById('flash-card');
+            cardEl.classList.remove('flipped');
+            document.getElementById('flash-hanzi').textContent = w.h;
+            document.getElementById('flash-pinyin').textContent = w.p;
+            document.getElementById('flash-meaning').textContent = w.m;
+            popAnimate(document.getElementById('flash-hanzi'), 'animate__fadeIn');
+            updateProgress('flash-progress');
+        }
+        document.getElementById('flash-card').onclick = () => {
+            document.getElementById('flash-card').classList.toggle('flipped');
+        };
+        document.getElementById('flash-next').onclick = () => {
+            idx = (idx + 1) % order.length;
+            if (idx === 0) toast('Đã hết vòng!');
+            done++; updateStats(); renderFlash();
+        };
+        document.getElementById('flash-prev').onclick = () => {
+            idx = (idx - 1 + order.length) % order.length;
+            renderFlash();
+        };
+        // (nút flash-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
+
+        // ===== QUIZ =====
+        function advanceQuiz() {
+            clearAdvance();
+            idx = (idx + 1) % order.length;
+            if (idx === 0) toast('Đã hết vòng!');
+            renderQuiz();
+        }
+        function renderQuiz() {
+            if (!VOCAB.length) return;
+            clearAdvance();
+            answered = false;
+            const w = VOCAB[order[idx]];
+            document.getElementById('quiz-hanzi').textContent = w.h;
+            document.getElementById('quiz-hint').textContent = '';
+            document.getElementById('quiz-hint').classList.remove('show');
+            document.getElementById('quiz-next').style.display = 'none';
+            popAnimate(document.querySelector('.quiz-question'), 'animate__fadeIn');
+
+            let opts = [w.m];
+            while (opts.length < 4) {
+                const r = VOCAB[Math.floor(Math.random() * VOCAB.length)].m;
+                if (!opts.includes(r)) opts.push(r);
+            }
+            opts = shuffle(opts);
+
+            const box = document.getElementById('quiz-options');
+            box.innerHTML = '';
+            opts.forEach((o, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.style.animationDelay = (i * 0.06) + 's';
+                btn.textContent = o;
+                btn.onclick = (e) => {
+                    if (answered) return;
+                    answered = true;
+                    done++;
+                    const isCorrect = o === w.m;
+                    if (isCorrect) { correct++; playCorrect(); } else playWrong();
+                    checkAndCelebrate(isCorrect);
+                    updateStats();
+                    document.querySelectorAll('.option').forEach(b => {
+                        b.classList.add('disabled');
+                        if (b.textContent === w.m) b.classList.add('correct');
+                    });
+                    if (!isCorrect) btn.classList.add('wrong');
+                    document.getElementById('quiz-hint').textContent = w.p;
+                    document.getElementById('quiz-hint').classList.add('show');
+
+                    if (isCorrect) {
+                        advanceTimer = setTimeout(advanceQuiz, 350);
+                    } else {
+                        document.getElementById('quiz-next').style.display = 'inline-block';
+                        popAnimate(document.getElementById('quiz-next'), 'animate__fadeInUp');
+                    }
+                };
+                attachRipple(btn);
+                box.appendChild(btn);
+            });
+            updateProgress('quiz-progress');
+        }
+        document.getElementById('quiz-next').onclick = () => advanceQuiz();
+        // (nút quiz-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
+
+        // ===== TYPE =====
+        function advanceType() {
+            clearAdvance();
+            idx = (idx + 1) % order.length;
+            if (idx === 0) toast('Đã hết vòng!');
+            renderType();
+        }
+        function renderType() {
+            if (!VOCAB.length) return;
+            clearAdvance();
+            answered = false;
+            const w = VOCAB[order[idx]];
+            document.getElementById('type-hanzi').textContent = w.h;
+            document.getElementById('type-meaning').textContent = w.m;
+            popAnimate(document.querySelector('.type-question'), 'animate__fadeIn');
+            const input = document.getElementById('pinyin-input');
+            input.value = '';
+            input.classList.remove('correct', 'wrong');
+            input.disabled = false;
+            input.focus();
+            document.getElementById('type-feedback').textContent = '';
+            document.getElementById('type-feedback').className = 'feedback';
+            updateProgress('type-progress');
+        }
+        function checkPinyin() {
+            if (answered) return;
+            const w = VOCAB[order[idx]];
+            const input = document.getElementById('pinyin-input');
+            const user = input.value.trim();
+            if (!user) return;
+            answered = true;
+            done++;
+            const isCorrect = normalizePinyin(user) === normalizePinyin(w.p);
+            if (isCorrect) {
+                correct++;
+                input.classList.add('correct');
+                input.disabled = true;
+                document.getElementById('type-feedback').textContent = '✓ Chính xác! ' + w.p;
+                document.getElementById('type-feedback').className = 'feedback ok';
+                playCorrect();
+                checkAndCelebrate(true);
+                advanceTimer = setTimeout(advanceType, 350);
+            } else {
+                input.classList.add('wrong');
+                document.getElementById('type-feedback').textContent = '✗ Đáp án: ' + w.p;
+                document.getElementById('type-feedback').className = 'feedback err';
+                playWrong();
+                checkAndCelebrate(false);
+            }
+            updateStats();
+        }
+        document.getElementById('type-check').onclick = checkPinyin;
+        document.getElementById('pinyin-input').onkeydown = e => {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            if (!answered) checkPinyin();
+            else advanceType();
+        };
+        document.getElementById('type-skip').onclick = () => advanceType();
+        // (nút type-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
+        document.querySelectorAll('.tone-btn').forEach(btn => {
+            btn.onclick = () => {
+                const input = document.getElementById('pinyin-input');
+                if (input.disabled) return;
+                if (btn.dataset.tone !== '0') input.value += btn.dataset.tone;
+                input.focus();
+            };
+        });
+
+        // ===== MODE =====
+        function switchMode(modeId) {
+            const cfg = getModeConfig(modeId);
+            if (!cfg) return;
+            mode = modeId;
+            document.querySelectorAll('.mode-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === modeId);
+            });
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById('panel-' + modeId);
+            if (panel) {
+                panel.classList.add('active');
+                popAnimate(panel, 'animate__fadeIn');
+            }
+            cfg.render();
+        }
+
+        // ===== SINH TAB TỰ ĐỘNG TỪ CONFIG =====
+        function buildLevelTabs() {
+            const box = document.getElementById('level-tabs');
+            box.innerHTML = '';
+            LEVELS.forEach(lv => {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.dataset.level = lv.id;
+                btn.textContent = lv.label;
+                btn.onclick = () => setLevel(lv.id);
+                attachRipple(btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function buildModeTabs() {
+            const box = document.getElementById('modes-bar');
+            box.innerHTML = '';
+            MODES.forEach((m, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'mode-btn' + (m.id === mode ? ' active' : '');
+                btn.dataset.mode = m.id;
+                btn.textContent = m.label;
+                btn.onclick = () => switchMode(m.id);
+                attachRipple(btn);
+                box.appendChild(btn);
+            });
+        }
+
+        // Nút "Xáo trộn" riêng của từng panel gọi lại đúng shuffle() đã khai
+        // báo trong MODES, để logic xáo trộn cũng nằm tập trung một chỗ.
+        function bindShuffleButtons() {
+            const map = { flash: 'flash-shuffle', quiz: 'quiz-shuffle', type: 'type-shuffle' };
+            MODES.forEach(m => {
+                const btnId = map[m.id];
+                if (!btnId) return; // mode mới tự đặt id nút riêng nếu cần
+                const btn = document.getElementById(btnId);
+                if (btn) btn.onclick = () => m.shuffle();
+            });
+        }
+
+        // =====================================================================
+        // TÌM KIẾM TOÀN CỤC — lấy dữ liệu từ tất cả các file JSON HSK đang có
+        // (tự tải file nào chưa được tải), lọc theo Hán tự / pinyin / nghĩa,
+        // hiển thị kết quả ngay khi gõ (debounce ~250ms, KHÔNG cần Enter).
+        // =====================================================================
+        const SEARCH_MAX_RESULTS = 40;
+        let allVocabLoadPromise = null;
+
+        // Tải toàn bộ các level chưa có trong cache, gộp lại thành 1 promise
+        // dùng chung để tránh gọi tải trùng lặp khi search nhiều lần liên tiếp.
+        function ensureAllVocabLoaded() {
+            const missing = LEVELS.filter(lv => !VOCAB_BY_LEVEL[lv.id]);
+            if (!missing.length) return Promise.resolve();
+            if (!allVocabLoadPromise) {
+                allVocabLoadPromise = Promise.all(missing.map(lv => loadVocab(lv.id)))
+                    .finally(() => { allVocabLoadPromise = null; });
+            }
+            return allVocabLoadPromise;
+        }
+
+        function escapeHtml(s) {
+            return (s == null ? '' : String(s))
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Bỏ dấu tiếng Việt + về chữ thường để so khớp không phân biệt dấu/hoa-thường
+        function normalizeSearchText(s) {
+            return (s == null ? '' : String(s))
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .trim();
+        }
+
+        function highlightMatch(text, query) {
+            const t = text == null ? '' : String(text);
+            const nq = normalizeSearchText(query);
+            if (!nq) return escapeHtml(t);
+            const norm = normalizeSearchText(t);
+            const i = norm.indexOf(nq);
+            if (i === -1) return escapeHtml(t);
+            return escapeHtml(t.slice(0, i)) +
+                '<span class="sr-mark">' + escapeHtml(t.slice(i, i + nq.length)) + '</span>' +
+                escapeHtml(t.slice(i + nq.length));
+        }
+
+        // Quét toàn bộ VOCAB_BY_LEVEL (mọi file JSON đã tải) tìm từ khớp
+        function searchAllVocab(query) {
+            const raw = query.trim();
+            const nq = normalizeSearchText(raw);
+            if (!nq) return [];
+            const results = [];
+            for (const lv of LEVELS) {
+                const list = VOCAB_BY_LEVEL[lv.id];
+                if (!list) continue;
+                for (const w of list) {
+                    const hanziMatch = w.h && w.h.includes(raw);
+                    const pinyinMatch = w.p && normalizeSearchText(w.p).includes(nq);
+                    const meaningMatch = w.m && normalizeSearchText(w.m).includes(nq);
+                    if (hanziMatch || pinyinMatch || meaningMatch) {
+                        results.push({ h: w.h, p: w.p, m: w.m, level: lv.id, levelLabel: lv.label });
+                        if (results.length >= SEARCH_MAX_RESULTS) return results;
+                    }
+                }
+            }
+            return results;
+        }
+
+        const searchResultsBox = document.getElementById('search-results');
+
+        function renderSearchLoading() {
+            searchResultsBox.innerHTML = '<div class="search-loading">⏳ Đang tải dữ liệu để tìm...</div>';
+            searchResultsBox.classList.add('show');
+        }
+
+        function renderSearchResults(query, results) {
+            if (!query.trim()) {
+                searchResultsBox.classList.remove('show');
+                searchResultsBox.innerHTML = '';
+                return;
+            }
+            if (!results.length) {
+                searchResultsBox.innerHTML = '<div class="search-empty">Không tìm thấy "' + escapeHtml(query.trim()) + '"</div>';
+                searchResultsBox.classList.add('show');
+                return;
+            }
+            searchResultsBox.innerHTML = results.map(r => `
+                <div class="search-result-item" data-level="${r.level}" data-hanzi="${escapeHtml(r.h)}">
+                    <div class="sr-hanzi">${escapeHtml(r.h)}</div>
+                    <div class="sr-body">
+                        <div class="sr-pinyin">${highlightMatch(r.p, query)}</div>
+                        <div class="sr-meaning">${highlightMatch(r.m, query)}</div>
+                    </div>
+                    <div class="sr-level">${escapeHtml(r.levelLabel)}</div>
+                </div>
+            `).join('');
+            searchResultsBox.classList.add('show');
+            searchResultsBox.querySelectorAll('.search-result-item').forEach(item => {
+                item.onclick = () => jumpToWord(+item.dataset.level, item.dataset.hanzi);
+            });
+        }
+
+        // Nhảy tới đúng từ đã chọn: chuyển cấp độ tương ứng, đặt thẻ hiện tại
+        // trỏ đúng vào từ đó, rồi mở chế độ Thẻ ghi nhớ.
+        async function jumpToWord(level, hanzi) {
+            searchResultsBox.classList.remove('show');
+            await setLevel(level);
+            const pos = VOCAB.findIndex(w => w.h === hanzi);
+            if (pos === -1) return;
+            const orderPos = order.indexOf(pos);
+            idx = orderPos === -1 ? 0 : orderPos;
+            switchMode('flash');
+            toast('Đã chuyển tới: ' + hanzi);
+        }
+
+        function initSearch() {
+            const input = document.getElementById('global-search');
+            const clearBtn = document.getElementById('search-clear');
+            let debounceTimer = null;
+
+            input.addEventListener('input', () => {
+                const q = input.value;
+                clearBtn.style.display = q ? 'inline-block' : 'none';
+                clearTimeout(debounceTimer);
+
+                if (!q.trim()) {
+                    renderSearchResults(q, []);
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    const needsLoad = LEVELS.some(lv => !VOCAB_BY_LEVEL[lv.id]);
+                    if (needsLoad) renderSearchLoading();
+                    await ensureAllVocabLoaded();
+                    // Nếu người dùng đã gõ thêm/khác trong lúc chờ tải, dùng giá trị mới nhất
+                    const latestQuery = input.value;
+                    renderSearchResults(latestQuery, searchAllVocab(latestQuery));
+                }, 250);
+            });
+
+            clearBtn.onclick = () => {
+                input.value = '';
+                clearBtn.style.display = 'none';
+                renderSearchResults('', []);
+                input.focus();
+            };
+
+            input.addEventListener('focus', () => {
+                if (input.value.trim() && searchResultsBox.innerHTML) {
+                    searchResultsBox.classList.add('show');
+                }
+            });
+
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Escape') {
+                    input.value = '';
+                    clearBtn.style.display = 'none';
+                    renderSearchResults('', []);
+                    input.blur();
+                } else if (e.key === 'Enter') {
+                    // Enter chỉ là tiện ích nhảy nhanh tới kết quả đầu tiên —
+                    // kết quả vốn đã tự hiển thị khi gõ, không bắt buộc phải bấm.
+                    const first = searchResultsBox.querySelector('.search-result-item');
+                    if (first) first.click();
+                }
+            });
+
+            document.addEventListener('click', e => {
+                if (!document.getElementById('search-wrap').contains(e.target)) {
+                    searchResultsBox.classList.remove('show');
+                }
+            });
+        }
+
+        // ===== INIT =====
+        buildLevelTabs();
+        buildModeTabs();
+        bindShuffleButtons();
+        attachRippleAll();
+        initSearch();
+
+        (async () => {
+            const savedLevel = parseInt(localStorage.getItem('hsk_last_level')) || LEVELS[0].id;
+            await setLevel(savedLevel);
+        })();
+
+        document.body.addEventListener('click', () => {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }, { once: true });
+    </script>
+</body>
+
+</html>
