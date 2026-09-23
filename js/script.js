@@ -1,16 +1,7 @@
-        // =====================================================================
-        // CẤU HÌNH TAB — nguồn duy nhất cho cả cấp độ HSK và chế độ học.
-        // Muốn thêm/sửa/xoá tab: chỉ cần sửa 2 mảng dưới đây, KHÔNG cần đụng
-        // vào HTML hay các hàm render/sự kiện — mọi nơi khác trong code đều
-        // tra cứu ngược lại từ đây (id, nhãn, file dữ liệu...).
-        // =====================================================================
 
-        // Giá trị mặc định dùng chung cho mọi level — muốn 1 level có hành vi
-        // khác (VD: số lượng đáp án trắc nghiệm riêng) thì spread đè lên là đủ.
         const LEVEL_DEFAULTS = {
             quizOptionCount: 4
         };
-
         const LEVELS = [
             { id: 1, label: 'HSK 1', file: 'data/hsk1.json' },
             { id: 2, label: 'HSK 2', file: 'data/hsk2.json' },
@@ -20,15 +11,7 @@
             { id: 6, label: 'HSK 6', file: 'data/hsk6.json' },
             { id: 30, label: 'HSK 3.0', file: 'data/hsk30.json' },
             { id: 40, label: 'OTHERS', file: 'data/others.json' },
-
-            // Thêm cấp độ mới ở đây, ví dụ:
-            // { id: 7, label: 'HSK 7-9', file: 'data/hsk79.json' },
         ].map(lv => ({ ...LEVEL_DEFAULTS, ...lv }));
-
-        // Mỗi mode cần: id (khớp với id="panel-<id>" đã có sẵn trong HTML),
-        // label hiển thị trên nút, render() để vẽ câu hỏi/thẻ hiện tại,
-        // và shuffle() để xử lý nút "Xáo trộn" riêng của mode đó.
-        // Muốn thêm mode mới: thêm 1 panel HTML "panel-xxx" + 1 object ở đây.
         const MODES = [
             {
                 id: 'flash',
