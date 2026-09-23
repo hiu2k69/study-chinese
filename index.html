@@ -1061,13 +1061,8 @@
             gap: 0.4rem;
         }
 
-        .summary-section-title.ok {
-            color: var(--success);
-        }
-
-        .summary-section-title.bad {
-            color: var(--error);
-        }
+        .summary-section-title.ok { color: var(--success); }
+        .summary-section-title.bad { color: var(--error); }
 
         .summary-list {
             display: flex;
@@ -1089,13 +1084,8 @@
             font-size: 0.85rem;
         }
 
-        .summary-row.ok {
-            border-left: 3px solid var(--success);
-        }
-
-        .summary-row.bad {
-            border-left: 3px solid var(--error);
-        }
+        .summary-row.ok { border-left: 3px solid var(--success); }
+        .summary-row.bad { border-left: 3px solid var(--error); }
 
         .summary-hanzi {
             font-family: 'Noto Sans SC', sans-serif;
@@ -1120,6 +1110,69 @@
             font-size: 0.82rem;
             color: var(--muted);
             padding: 0.4rem 0.2rem;
+        }
+
+        /* ===== Chế độ Nghe từ ===== */
+        .listen-play-btn {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: #fff;
+            font-size: 2.3rem;
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(0, 212, 255, 0.35);
+            transition: transform 0.15s, box-shadow 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.6rem;
+        }
+
+        .listen-play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 34px rgba(0, 212, 255, 0.5);
+        }
+
+        .listen-play-btn:active {
+            transform: scale(0.93);
+        }
+
+        .listen-play-btn.speaking {
+            animation: listen-pulse 0.9s ease-in-out infinite;
+        }
+
+        @keyframes listen-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 8px 28px rgba(0, 212, 255, 0.35);
+            }
+
+            50% {
+                box-shadow: 0 8px 42px rgba(0, 212, 255, 0.75);
+            }
+        }
+
+        .listen-hint-text {
+            font-family: var(--font-tech);
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .listen-hanzi-reveal {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: clamp(2.2rem, 9vw, 4rem);
+            font-weight: 700;
+            margin-top: 0.7rem;
+        }
+
+        .listen-pinyin-reveal {
+            font-size: 1.05rem;
+            color: var(--accent3);
+            margin-top: 0.3rem;
         }
 
         .modal-actions {
@@ -1160,7 +1213,7 @@
 
     <header class="animate__animated animate__fadeInDown">
         <h1>HSK 1-6 · 词汇练习</h1>
-        <p id="header-desc">Chọn cấp độ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin</p>
+        <p id="header-desc">Chọn cấp độ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin · Nghe từ</p>
     </header>
 
     <!-- Các nút bên dưới được JS sinh tự động từ config LEVELS / MODES -->
@@ -1171,8 +1224,7 @@
     <div class="search-wrap animate__animated animate__fadeInUp" id="search-wrap">
         <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" id="global-search" placeholder="Tìm từ ở mọi cấp độ HSK... (vd: hôm qua)"
-                autocomplete="off">
+            <input type="text" id="global-search" placeholder="Tìm từ ở mọi cấp độ HSK... (vd: hôm qua)" autocomplete="off">
             <button class="search-clear" id="search-clear" title="Xóa tìm kiếm" style="display:none">✕</button>
         </div>
         <div class="search-results" id="search-results"></div>
@@ -1253,8 +1305,7 @@
                 <button class="tone-btn" data-tone="4">à</button>
                 <button class="tone-btn" data-tone="0">a</button>
             </div>
-            <input type="text" class="pinyin-input" id="pinyin-input" placeholder="Nhập pinyin (vd: ai4)"
-                autocomplete="off">
+            <input type="text" class="pinyin-input" id="pinyin-input" placeholder="Nhập pinyin (vd: ai4)" autocomplete="off">
             <div class="feedback" id="type-feedback"></div>
             <div class="progress-bar">
                 <div class="progress-fill" id="type-progress" style="width:0%"></div>
@@ -1263,6 +1314,22 @@
                 <button class="btn primary" id="type-check">Kiểm tra</button>
                 <button class="btn" id="type-skip">Bỏ qua</button>
                 <button class="btn" id="type-shuffle">🔀 Xáo</button>
+            </div>
+        </div>
+        <div class="panel" id="panel-listen">
+            <div class="quiz-question" id="listen-question">
+                <button class="listen-play-btn" id="listen-play" title="Nghe lại">🔊</button>
+                <div class="listen-hint-text">Nhấn để nghe · Chọn đúng nghĩa</div>
+                <div class="listen-hanzi-reveal" id="listen-hanzi-reveal" style="display:none"></div>
+                <div class="listen-pinyin-reveal" id="listen-pinyin-reveal" style="display:none"></div>
+            </div>
+            <div class="options" id="listen-options"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="listen-progress" style="width:0%"></div>
+            </div>
+            <div class="controls">
+                <button class="btn primary" id="listen-next" style="display:none">Câu tiếp →</button>
+                <button class="btn" id="listen-shuffle">🔀 Xáo</button>
             </div>
         </div>
     </div>
@@ -1290,7 +1357,7 @@
     <!-- Bootstrap bundle (Popper + JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="js/script.js"></script>
+   <script src="./js/script.js"></script>
 </body>
 
 </html>
