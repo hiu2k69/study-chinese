@@ -639,6 +639,26 @@
             box-shadow: 0 4px 22px rgba(255, 77, 109, 0.5);
         }
 
+        .btn.know {
+            background: rgba(0, 230, 118, 0.14);
+            border-color: rgba(0, 230, 118, 0.4);
+            color: #baffdb;
+        }
+
+        .btn.know:hover {
+            box-shadow: 0 0 16px rgba(0, 230, 118, 0.3);
+        }
+
+        .btn.dontknow {
+            background: rgba(255, 82, 82, 0.14);
+            border-color: rgba(255, 82, 82, 0.4);
+            color: #ffc7c7;
+        }
+
+        .btn.dontknow:hover {
+            box-shadow: 0 0 16px rgba(255, 82, 82, 0.3);
+        }
+
         .card-nav,
         .controls {
             display: flex;
@@ -646,6 +666,14 @@
             gap: 0.6rem;
             flex-wrap: wrap;
             margin-top: 0.8rem;
+        }
+
+        .rate-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.6rem;
         }
 
         .quiz-question,
@@ -949,6 +977,151 @@
             }
         }
 
+        /* ===== Modal tổng kết vòng học ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            background: rgba(8, 8, 16, 0.72);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 460px;
+            max-height: 88vh;
+            overflow-y: auto;
+            background: linear-gradient(160deg, rgba(26, 26, 46, 0.98), rgba(15, 15, 26, 0.99));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.6rem 1.3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 212, 255, 0.08) inset;
+            transform: translateY(16px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-title {
+            font-family: var(--font-tech);
+            text-align: center;
+            font-size: 1.05rem;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .modal-score {
+            font-family: var(--font-tech);
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0.4rem 0 0.1rem;
+            background: linear-gradient(135deg, #ff4d6d, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-detail {
+            text-align: center;
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .modal-eval {
+            text-align: center;
+            color: var(--accent3);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-section-title {
+            font-family: var(--font-tech);
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin: 0.9rem 0 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .summary-section-title.ok { color: var(--success); }
+        .summary-section-title.bad { color: var(--error); }
+
+        .summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            max-height: 160px;
+            overflow-y: auto;
+            padding-right: 0.2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.45rem 0.7rem;
+            font-size: 0.85rem;
+        }
+
+        .summary-row.ok { border-left: 3px solid var(--success); }
+        .summary-row.bad { border-left: 3px solid var(--error); }
+
+        .summary-hanzi {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+
+        .summary-pinyin {
+            color: var(--accent3);
+            flex-shrink: 0;
+        }
+
+        .summary-meaning {
+            color: #d8d8e2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .summary-empty {
+            font-size: 0.82rem;
+            color: var(--muted);
+            padding: 0.4rem 0.2rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
         @media (max-width:480px) {
             .card-container {
                 height: 260px;
@@ -1031,6 +1204,10 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="flash-progress" style="width:0%"></div>
             </div>
+            <div class="rate-row">
+                <button class="btn dontknow" id="flash-dontknow">😥 Chưa thuộc</button>
+                <button class="btn know" id="flash-know">😊 Đã thuộc</button>
+            </div>
             <div class="card-nav">
                 <button class="btn" id="flash-prev">← Trước</button>
                 <button class="btn primary" id="flash-next">Tiếp →</button>
@@ -1079,6 +1256,27 @@
     </div>
 
     <div class="toast" id="toast"></div>
+
+    <!-- Modal tổng kết vòng học: hiện khi số câu đã làm == tổng số từ -->
+    <div class="modal-overlay" id="summary-modal">
+        <div class="modal-box">
+            <div class="modal-title">Tổng kết vòng học</div>
+            <div class="modal-score" id="summary-score">0%</div>
+            <div class="modal-detail" id="summary-detail">0/0 câu đúng</div>
+            <div class="modal-eval" id="summary-eval"></div>
+
+            <div class="summary-section-title ok">✅ Đã làm đúng</div>
+            <div class="summary-list" id="summary-correct-list"></div>
+
+            <div class="summary-section-title bad">❌ Đã làm sai</div>
+            <div class="summary-list" id="summary-wrong-list"></div>
+
+            <div class="modal-actions">
+                <button class="btn" id="summary-close">Đóng</button>
+                <button class="btn primary" id="summary-restart">🔁 Học lại vòng mới</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap bundle (Popper + JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1156,6 +1354,10 @@
         let answered = false;
         let consecutiveCorrect = 0;
         let advanceTimer = null;
+        // Nhật ký các câu đã trả lời trong VÒNG HIỆN TẠI (reset mỗi khi resetOrder()
+        // được gọi — tức đổi cấp độ / xáo trộn / bắt đầu vòng mới). Dùng để biết
+        // khi nào đã làm hết toàn bộ số từ và để hiển thị modal tổng kết.
+        let roundLog = [];
 
         // ===== RIPPLE EFFECT (áp dụng cho mọi .btn / .level-btn / .mode-btn / .tone-btn) =====
         function attachRipple(el) {
@@ -1416,6 +1618,7 @@
             order = shuffle([...Array(VOCAB.length).keys()]);
             idx = 0;
             answered = false;
+            roundLog = [];
             clearAdvance();
         }
         function toast(msg) {
@@ -1434,7 +1637,7 @@
             pulseStat('stat-acc');
         }
         function updateProgress(id) {
-            document.getElementById(id).style.width = ((idx + 1) / order.length * 100).toFixed(1) + '%';
+            document.getElementById(id).style.width = (roundLog.length / order.length * 100).toFixed(1) + '%';
         }
         function normalizePinyin(s) {
             return s.toLowerCase()
@@ -1454,6 +1657,64 @@
                 consecutiveCorrect = 0;
             }
         }
+
+        // ===== NHẬT KÝ VÒNG HỌC + MODAL TỔNG KẾT =====
+        // Ghi lại 1 câu đã trả lời (đúng hoặc sai) vào vòng hiện tại. Được gọi
+        // từ cả 3 chế độ: Trắc nghiệm, Gõ Pinyin, và 2 nút "Đã thuộc/Chưa thuộc"
+        // ở Thẻ ghi nhớ. Khi số câu đã ghi == tổng số từ của cấp độ đang học,
+        // vòng học coi như hoàn thành và modal tổng kết sẽ được hiện ra.
+        function recordAnswer(item, isCorrect) {
+            roundLog.push({ h: item.h, p: item.p, m: item.m, correct: isCorrect });
+        }
+        function isRoundComplete() {
+            return order.length > 0 && roundLog.length >= order.length;
+        }
+        function evalMessage(pct) {
+            if (pct === 100) return 'Xuất sắc! Hoàn hảo tuyệt đối! 🏆';
+            if (pct >= 80) return 'Rất tốt! Bạn nắm khá vững rồi! 🌟';
+            if (pct >= 60) return 'Khá ổn, luyện thêm chút nữa nhé! 💪';
+            if (pct >= 40) return 'Cần cố gắng hơn, ôn lại các từ sai nha! 📚';
+            return 'Đừng nản, hãy ôn lại kỹ hơn nhé! 🔄';
+        }
+        function summaryRow(w) {
+            return `<div class="summary-row ${w.correct ? 'ok' : 'bad'}">
+                <span class="summary-hanzi">${escapeHtml(w.h)}</span>
+                <span class="summary-pinyin">${escapeHtml(w.p)}</span>
+                <span class="summary-meaning">${escapeHtml(w.m)}</span>
+            </div>`;
+        }
+        function showRoundSummary() {
+            clearAdvance();
+            const total = roundLog.length;
+            const correctList = roundLog.filter(x => x.correct);
+            const wrongList = roundLog.filter(x => !x.correct);
+            const pct = total ? Math.round(correctList.length / total * 100) : 0;
+
+            document.getElementById('summary-score').textContent = pct + '%';
+            document.getElementById('summary-detail').textContent = `${correctList.length}/${total} câu đúng · ${getLevelName(currentLevel)}`;
+            document.getElementById('summary-eval').textContent = evalMessage(pct);
+
+            document.getElementById('summary-correct-list').innerHTML = correctList.length
+                ? correctList.map(summaryRow).join('')
+                : '<div class="summary-empty">Chưa có câu nào đúng</div>';
+            document.getElementById('summary-wrong-list').innerHTML = wrongList.length
+                ? wrongList.map(summaryRow).join('')
+                : '<div class="summary-empty">Không sai câu nào cả 🎉</div>';
+
+            const modal = document.getElementById('summary-modal');
+            modal.classList.add('show');
+            if (pct >= 80) triggerFireworks();
+        }
+        function closeRoundSummary(restart) {
+            document.getElementById('summary-modal').classList.remove('show');
+            resetOrder();
+            if (mode === 'flash') renderFlash();
+            else if (mode === 'quiz') renderQuiz();
+            else renderType();
+            if (restart) toast('Bắt đầu vòng mới!');
+        }
+        document.getElementById('summary-restart').onclick = () => closeRoundSummary(true);
+        document.getElementById('summary-close').onclick = () => closeRoundSummary(false);
 
         // ===== LOAD VOCAB FROM JSON =====
         async function loadVocab(level) {
@@ -1536,22 +1797,48 @@
         document.getElementById('flash-card').onclick = () => {
             document.getElementById('flash-card').classList.toggle('flipped');
         };
+        // "Tiếp / Trước" dùng để DUYỆT tự do, không tính điểm / không ghi vào
+        // roundLog — tránh ép người dùng phải chấm điểm nếu chỉ muốn lướt xem.
         document.getElementById('flash-next').onclick = () => {
+            if (!VOCAB.length) return;
             idx = (idx + 1) % order.length;
-            if (idx === 0) toast('Đã hết vòng!');
-            done++; updateStats(); renderFlash();
+            renderFlash();
         };
         document.getElementById('flash-prev').onclick = () => {
+            if (!VOCAB.length) return;
             idx = (idx - 1 + order.length) % order.length;
             renderFlash();
         };
+        // 2 nút chấm điểm: ghi vào roundLog + tự động sang thẻ tiếp theo (hoặc
+        // hiện modal tổng kết nếu đây là thẻ cuối cùng của vòng).
+        function flashRateAndAdvance(isCorrect) {
+            if (!VOCAB.length) return;
+            const w = VOCAB[order[idx]];
+            recordAnswer(w, isCorrect);
+            done++;
+            if (isCorrect) correct++;
+            updateStats();
+            checkAndCelebrate(isCorrect);
+            updateProgress('flash-progress');
+            if (isRoundComplete()) {
+                showRoundSummary();
+                return;
+            }
+            idx = (idx + 1) % order.length;
+            renderFlash();
+        }
+        document.getElementById('flash-know').onclick = () => flashRateAndAdvance(true);
+        document.getElementById('flash-dontknow').onclick = () => flashRateAndAdvance(false);
         // (nút flash-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
 
         // ===== QUIZ =====
         function advanceQuiz() {
             clearAdvance();
+            if (isRoundComplete()) {
+                showRoundSummary();
+                return;
+            }
             idx = (idx + 1) % order.length;
-            if (idx === 0) toast('Đã hết vòng!');
             renderQuiz();
         }
         function renderQuiz() {
@@ -1585,6 +1872,7 @@
                     done++;
                     const isCorrect = o === w.m;
                     if (isCorrect) { correct++; playCorrect(); } else playWrong();
+                    recordAnswer(w, isCorrect);
                     checkAndCelebrate(isCorrect);
                     updateStats();
                     document.querySelectorAll('.option').forEach(b => {
@@ -1613,8 +1901,11 @@
         // ===== TYPE =====
         function advanceType() {
             clearAdvance();
+            if (isRoundComplete()) {
+                showRoundSummary();
+                return;
+            }
             idx = (idx + 1) % order.length;
-            if (idx === 0) toast('Đã hết vòng!');
             renderType();
         }
         function renderType() {
@@ -1643,6 +1934,7 @@
             answered = true;
             done++;
             const isCorrect = normalizePinyin(user) === normalizePinyin(w.p);
+            recordAnswer(w, isCorrect);
             if (isCorrect) {
                 correct++;
                 input.classList.add('correct');
@@ -1668,7 +1960,18 @@
             if (!answered) checkPinyin();
             else advanceType();
         };
-        document.getElementById('type-skip').onclick = () => advanceType();
+        document.getElementById('type-skip').onclick = () => {
+            // Bỏ qua mà chưa trả lời cũng được tính là 1 câu sai để vòng học
+            // vẫn hoàn thành đúng khi đi hết danh sách từ.
+            if (!answered && VOCAB.length) {
+                const w = VOCAB[order[idx]];
+                recordAnswer(w, false);
+                done++;
+                checkAndCelebrate(false);
+                updateStats();
+            }
+            advanceType();
+        };
         // (nút type-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
         document.querySelectorAll('.tone-btn').forEach(btn => {
             btn.onclick = () => {
@@ -1684,6 +1987,10 @@
             const cfg = getModeConfig(modeId);
             if (!cfg) return;
             mode = modeId;
+            // Mỗi chế độ có tiêu chí tính "hoàn thành vòng" riêng, nên khi đổi
+            // chế độ ta reset nhật ký (không reset thứ tự/idx để giữ đúng vị
+            // trí từ đang xem).
+            roundLog = [];
             document.querySelectorAll('.mode-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.mode === modeId);
             });
