@@ -1,16 +1,7 @@
-        // =====================================================================
-        // CẤU HÌNH TAB — nguồn duy nhất cho cả cấp độ HSK và chế độ học.
-        // Muốn thêm/sửa/xoá tab: chỉ cần sửa 2 mảng dưới đây, KHÔNG cần đụng
-        // vào HTML hay các hàm render/sự kiện — mọi nơi khác trong code đều
-        // tra cứu ngược lại từ đây (id, nhãn, file dữ liệu...).
-        // =====================================================================
 
-        // Giá trị mặc định dùng chung cho mọi level — muốn 1 level có hành vi
-        // khác (VD: số lượng đáp án trắc nghiệm riêng) thì spread đè lên là đủ.
         const LEVEL_DEFAULTS = {
             quizOptionCount: 4
         };
-
         const LEVELS = [
             { id: 1, label: 'HSK 1', file: 'data/hsk1.json' },
             { id: 2, label: 'HSK 2', file: 'data/hsk2.json' },
@@ -20,15 +11,7 @@
             { id: 6, label: 'HSK 6', file: 'data/hsk6.json' },
             { id: 30, label: 'HSK 3.0', file: 'data/hsk30.json' },
             { id: 40, label: 'OTHERS', file: 'data/others.json' },
-
-            // Thêm cấp độ mới ở đây, ví dụ:
-            // { id: 7, label: 'HSK 7-9', file: 'data/hsk79.json' },
         ].map(lv => ({ ...LEVEL_DEFAULTS, ...lv }));
-
-        // Mỗi mode cần: id (khớp với id="panel-<id>" đã có sẵn trong HTML),
-        // label hiển thị trên nút, render() để vẽ câu hỏi/thẻ hiện tại,
-        // và shuffle() để xử lý nút "Xáo trộn" riêng của mode đó.
-        // Muốn thêm mode mới: thêm 1 panel HTML "panel-xxx" + 1 object ở đây.
         const MODES = [
             {
                 id: 'flash',
@@ -48,14 +31,8 @@
                 render: () => renderType(),
                 shuffle: () => { resetOrder(); renderType(); toast('Đã xáo trộn!'); }
             },
-            {
-                id: 'listen',
-                label: '🔊 Nghe từ',
-                render: () => renderListen(),
-                shuffle: () => { resetOrder(); renderListen(); toast('Đã xáo trộn!'); }
-            },
             // Thêm chế độ mới ở đây, ví dụ:
-            // { id: 'write', label: '✍️ Viết Hán tự', render: () => renderWrite(), shuffle: () => {...} },
+            // { id: 'listen', label: '🔊 Nghe đoán từ', render: () => renderListen(), shuffle: () => {...} },
         ];
 
         function getLevelConfig(id) {
@@ -168,31 +145,6 @@
         }
         function playWrong() {
             playTone(200, 'sawtooth', 0.2, 0.08);
-        }
-
-        // ===== TEXT-TO-SPEECH cho chế độ Nghe từ (dùng Web Speech API, không
-        // cần file âm thanh riêng). Nếu trình duyệt không hỗ trợ, báo 1 lần
-        // qua toast và chế độ vẫn hoạt động (chỉ là không phát được tiếng). =====
-        const speechSupported = 'speechSynthesis' in window;
-        let speechWarned = false;
-        function speakHanzi(text) {
-            if (!speechSupported) {
-                if (!speechWarned) { toast('Trình duyệt không hỗ trợ phát âm 🔇'); speechWarned = true; }
-                return;
-            }
-            try {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'zh-CN';
-                utter.rate = 0.85;
-                const btn = document.getElementById('listen-play');
-                if (btn) {
-                    btn.classList.add('speaking');
-                    utter.onend = () => btn.classList.remove('speaking');
-                    utter.onerror = () => btn.classList.remove('speaking');
-                }
-                window.speechSynthesis.speak(utter);
-            } catch (e) { }
         }
 
         // ===== FIREWORKS =====
@@ -417,11 +369,11 @@
             return order.length > 0 && roundLog.length >= order.length;
         }
         function evalMessage(pct) {
-            if (pct === 100) return 'Xuất sắc! Hoàn hảo tuyệt đối! 🏆';
-            if (pct >= 80) return 'Rất tốt! Bạn nắm khá vững rồi! 🌟';
-            if (pct >= 60) return 'Khá ổn, luyện thêm chút nữa nhé! 💪';
-            if (pct >= 40) return 'Cần cố gắng hơn, ôn lại các từ sai nha! 📚';
-            return 'Đừng nản, hãy ôn lại kỹ hơn nhé! 🔄';
+            if (pct === 100) return 'FULL COMBO! HSK nhìn bạn cũng phải cúi đầu! 🗿🏆';
+            if (pct >= 80) return 'Khét đấy! Có vẻ hôm nay bạn không học bằng niềm tin! 🔥😎';
+            if (pct >= 60) return 'Tạm ổn! Não vẫn còn kết nối Wi-Fi với tiếng Trung! 📶😂';
+            if (pct >= 40) return 'Toang nhẹ! Từ vựng chạy nhanh hơn tốc độ bạn học! 🏃💨';
+            return 'Học kiểu này HSK cũng phải hỏi: “Bạn là ai?” 🤡📚';
         }
         function summaryRow(w) {
             return `<div class="summary-row ${w.correct ? 'ok' : 'bad'}">
@@ -452,7 +404,9 @@
         function closeRoundSummary(restart) {
             document.getElementById('summary-modal').classList.remove('show');
             resetOrder();
-            getModeConfig(mode).render();
+            if (mode === 'flash') renderFlash();
+            else if (mode === 'quiz') renderQuiz();
+            else renderType();
             if (restart) toast('Bắt đầu vòng mới!');
         }
         document.getElementById('summary-restart').onclick = () => closeRoundSummary(true);
@@ -509,7 +463,7 @@
             const desc = document.getElementById('header-desc');
             desc.style.opacity = 0;
             setTimeout(() => {
-                desc.textContent = `${getLevelName(level)} · ${VOCAB.length} từ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin · Nghe từ`;
+                desc.textContent = `${getLevelName(level)} · ${VOCAB.length} từ · Nghĩa tiếng Việt · Thẻ ghi nhớ · Trắc nghiệm · Gõ Pinyin`;
                 desc.style.opacity = 1;
             }, 150);
 
@@ -517,7 +471,9 @@
 
             popAnimate(document.getElementById('panel-' + mode), 'animate__fadeIn');
 
-            getModeConfig(mode).render();
+            if (mode === 'flash') renderFlash();
+            else if (mode === 'quiz') renderQuiz();
+            else renderType();
 
             toast(`Đã chuyển sang ${getLevelName(level)}`);
         }
@@ -615,7 +571,7 @@
                     recordAnswer(w, isCorrect);
                     checkAndCelebrate(isCorrect);
                     updateStats();
-                    document.querySelectorAll('#quiz-options .option').forEach(b => {
+                    document.querySelectorAll('.option').forEach(b => {
                         b.classList.add('disabled');
                         if (b.textContent === w.m) b.classList.add('correct');
                     });
@@ -722,86 +678,6 @@
             };
         });
 
-        // ===== NGHE TỪ (LISTEN) =====
-        // Phát âm Hán tự bằng TTS, người học chọn đúng nghĩa trong 4 đáp án.
-        // Hán tự + pinyin chỉ hiện ra SAU khi đã chọn, giống trắc nghiệm nhưng
-        // câu hỏi là âm thanh thay vì chữ viết.
-        function advanceListen() {
-            clearAdvance();
-            if (isRoundComplete()) {
-                showRoundSummary();
-                return;
-            }
-            idx = (idx + 1) % order.length;
-            renderListen();
-        }
-        function renderListen() {
-            if (!VOCAB.length) return;
-            clearAdvance();
-            answered = false;
-            const w = VOCAB[order[idx]];
-            const reveal1 = document.getElementById('listen-hanzi-reveal');
-            const reveal2 = document.getElementById('listen-pinyin-reveal');
-            reveal1.style.display = 'none';
-            reveal1.textContent = '';
-            reveal2.style.display = 'none';
-            reveal2.textContent = '';
-            document.getElementById('listen-next').style.display = 'none';
-            popAnimate(document.getElementById('listen-question'), 'animate__fadeIn');
-
-            let opts = [w.m];
-            while (opts.length < 4) {
-                const r = VOCAB[Math.floor(Math.random() * VOCAB.length)].m;
-                if (!opts.includes(r)) opts.push(r);
-            }
-            opts = shuffle(opts);
-
-            const box = document.getElementById('listen-options');
-            box.innerHTML = '';
-            opts.forEach((o, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'option';
-                btn.style.animationDelay = (i * 0.06) + 's';
-                btn.textContent = o;
-                btn.onclick = () => {
-                    if (answered) return;
-                    answered = true;
-                    done++;
-                    const isCorrect = o === w.m;
-                    if (isCorrect) { correct++; playCorrect(); } else playWrong();
-                    recordAnswer(w, isCorrect);
-                    checkAndCelebrate(isCorrect);
-                    updateStats();
-                    document.querySelectorAll('#listen-options .option').forEach(b => {
-                        b.classList.add('disabled');
-                        if (b.textContent === w.m) b.classList.add('correct');
-                    });
-                    if (!isCorrect) btn.classList.add('wrong');
-                    reveal1.textContent = w.h;
-                    reveal1.style.display = 'block';
-                    reveal2.textContent = w.p;
-                    reveal2.style.display = 'block';
-
-                    if (isCorrect) {
-                        advanceTimer = setTimeout(advanceListen, 600);
-                    } else {
-                        document.getElementById('listen-next').style.display = 'inline-block';
-                        popAnimate(document.getElementById('listen-next'), 'animate__fadeInUp');
-                    }
-                };
-                attachRipple(btn);
-                box.appendChild(btn);
-            });
-            updateProgress('listen-progress');
-            speakHanzi(w.h);
-        }
-        document.getElementById('listen-play').onclick = () => {
-            if (!VOCAB.length) return;
-            speakHanzi(VOCAB[order[idx]].h);
-        };
-        document.getElementById('listen-next').onclick = () => advanceListen();
-        // (nút listen-shuffle được gắn tập trung qua bindShuffleButtons() + MODES)
-
         // ===== MODE =====
         function switchMode(modeId) {
             const cfg = getModeConfig(modeId);
@@ -855,7 +731,7 @@
         // Nút "Xáo trộn" riêng của từng panel gọi lại đúng shuffle() đã khai
         // báo trong MODES, để logic xáo trộn cũng nằm tập trung một chỗ.
         function bindShuffleButtons() {
-            const map = { flash: 'flash-shuffle', quiz: 'quiz-shuffle', type: 'type-shuffle', listen: 'listen-shuffle' };
+            const map = { flash: 'flash-shuffle', quiz: 'quiz-shuffle', type: 'type-shuffle' };
             MODES.forEach(m => {
                 const btnId = map[m.id];
                 if (!btnId) return; // mode mới tự đặt id nút riêng nếu cần
