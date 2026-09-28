@@ -2023,5 +2023,12 @@
   {"h":"测试要求","p":"cèshì yāoqiú","m":"yêu cầu test"},
   {"h":"测试标准","p":"cèshì biāozhǔn","m":"tiêu chuẩn test"},
   {"h":"测试次数","p":"cèshì cìshù","m":"số lần test"},
-  {"h":"测试完成","p":"cèshì wánchéng","m":"hoàn thành test"}
+  {"h":"测试完成","p":"cèshì wánchéng","m":"hoàn thành test"},
+  {"h":"耐久性测试","p":"nàijiǔxìng cèshì","m":"test độ bền / độ bền lâu"},
+  {"h":"使用寿命","p":"shǐyòng shòumìng","m":"tuổi thọ sử dụng"},
+  {"h":"寿命","p":"shòumìng","m":"tuổi thọ"},
+  {"h":"功能","p":"gōngnéng","m":"chức năng"},
+  {"h":"功能异常","p":"gōngnéng yìcháng","m":"chức năng bất thường"},
+  {"h":"功能正常","p":"gōngnéng zhèngcháng","m":"chức năng bình thường"},
+  {"h":"耐久测试","p":"nàijiǔ cèshì","m":"test độ bền"}
 ]
